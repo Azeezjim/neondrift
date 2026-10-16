@@ -1,0 +1,3 @@
+{ "leaderboard": { "stats": [
+  { "key": "distance", "label": "Distance (m)", "order": "highest" },
+  { "key": "orbs", "label": "Orbs", "order": "highest" } ] } }

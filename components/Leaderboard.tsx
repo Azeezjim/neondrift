@@ -1,0 +1,6 @@
+'use client'
+import { useEffect, useState } from 'react'
+import { askStartNg } from '@/lib/startng'
+import type { Player } from '@/hooks/useStartNgPlayer'
+type Row = { rank: number; name: string; distance: number; orbs: number; player_id?: string }
+export function Leaderboard({ player, onClose }: { player: Player; onClose: () => void }) { const [rows, setRows] = useState<Row[]>([]); useEffect(() => { askStartNg({ type: 'startng:leaderboard', limit: 10 }, 'startng:leaderboardData').then(r => setRows(r?.entries || r?.leaderboard || [])) }, []); return <div className="modal leaderboard"><button className="close" onClick={onClose}>×</button><div className="modal-kicker">GLOBAL BOARD</div><h2>Leaderboard</h2><p className="muted">Top drifters across the neon highway.</p><div className="table"><div className="thead"><span>#</span><span>DRIFTER</span><span>DISTANCE</span><span>ORBS</span></div>{rows.length ? rows.map((row, i) => <div className={`tr ${row.player_id === player.id ? 'current' : ''}`} key={`${row.name}-${i}`}><b>{row.rank || i + 1}</b><span>{row.name}</span><span>{Math.floor(row.distance)}m</span><span>{row.orbs}</span></div>) : <div className="empty">Sign in to save your score<br /><small>Guest runs stay on this device.</small></div>}</div></div> }

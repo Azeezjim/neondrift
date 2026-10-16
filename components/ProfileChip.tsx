@@ -1,0 +1,3 @@
+'use client'
+import type { Player } from '@/hooks/useStartNgPlayer'
+export function ProfileChip({ player }: { player: Player }) { const signedIn = Boolean(player.id && player.account); return <div className="profile-chip"><div className="avatar">{player.face ? <img src={player.face} alt="" /> : <span>{(player.name || 'G').slice(0, 1)}</span>}</div><div><strong>{player.name || 'Guest'}</strong><small>{signedIn ? `@${player.account}` : 'Guest'}</small></div>{!signedIn && <button onClick={() => { window.location.href = `https://start.ng/?return_to=${encodeURIComponent(window.location.origin + window.location.pathname)}` }}>Sign in</button>}</div> }
