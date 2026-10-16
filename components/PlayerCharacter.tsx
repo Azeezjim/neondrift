@@ -2,21 +2,25 @@
 import { useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
-
 type Props = { style?: Record<string, string>; speed?: number }
 export function PlayerCharacter({ style = {}, speed = 0 }: Props) {
-  const group = useRef<THREE.Group>(null)
-  const leftLeg = useRef<THREE.Group>(null); const rightLeg = useRef<THREE.Group>(null); const leftArm = useRef<THREE.Group>(null); const rightArm = useRef<THREE.Group>(null)
+  const group = useRef<THREE.Group>(null), leftLeg = useRef<THREE.Group>(null), rightLeg = useRef<THREE.Group>(null), leftArm = useRef<THREE.Group>(null), rightArm = useRef<THREE.Group>(null)
+  const body = style.body === 'female' ? 'female' : 'male', hairType = ['short','afro','braids','bun','ponytail','dreads','bald'].includes(style.hair || '') ? style.hair : 'short', hat = ['cap','beanie','tophat','crown'].includes(style.hat || '') ? style.hat : 'none', accessory = ['glasses','earrings','beard','scarf','backpack'].includes(style.accessory || '') ? style.accessory : 'none'
   const primary = style.primaryColor || '#ff3ea5', secondary = style.secondaryColor || '#5c6cff', skin = style.skinColor || '#f6b58e', hair = style.hairColor || '#151026'
-  useFrame(({ clock }) => { const t = clock.elapsedTime * (3 + speed * .35); const swing = Math.sin(t) * .42; if (leftLeg.current) leftLeg.current.rotation.x = swing; if (rightLeg.current) rightLeg.current.rotation.x = -swing; if (leftArm.current) leftArm.current.rotation.x = -swing; if (rightArm.current) rightArm.current.rotation.x = swing; if (group.current) group.current.position.y = Math.abs(Math.sin(t * 2)) * .035 })
+  useFrame(({ clock }) => { const t = clock.elapsedTime * (3 + speed * .35), swing = Math.sin(t) * (.25 + Math.min(speed, 3) * .1); if (leftLeg.current) leftLeg.current.rotation.x = swing; if (rightLeg.current) rightLeg.current.rotation.x = -swing; if (leftArm.current) leftArm.current.rotation.x = -swing; if (rightArm.current) rightArm.current.rotation.x = swing; if (group.current) { group.current.position.y = Math.abs(Math.sin(t * 2)) * .035; group.current.rotation.z = -Math.min(speed, 3) * .025 } })
+  const hairPart = hairType === 'afro' ? <mesh position={[0,2.48,0]}><sphereGeometry args={[.4,10,8]}/><meshStandardMaterial color={hair}/></mesh> : hairType === 'bald' ? null : <mesh position={[0,2.43,0]}><sphereGeometry args={[hairType === 'short' ? .3 : .33,10,7]}/><meshStandardMaterial color={hair}/></mesh>
   return <group ref={group}>
-    <mesh position={[0, 1.65, 0]}><boxGeometry args={[.62, .72, .38]} /><meshStandardMaterial color={primary} emissive={primary} emissiveIntensity={.35} /></mesh>
-    <mesh position={[0, 2.25, 0]}><sphereGeometry args={[.28, 8, 6]} /><meshStandardMaterial color={skin} /></mesh>
-    {style.hair !== 'bald' && <mesh position={[0, 2.43, 0]}><sphereGeometry args={[.29, 8, 5, 0, Math.PI * 2, 0, Math.PI * .48]} /><meshStandardMaterial color={hair} /></mesh>}
-    <group ref={leftLeg} position={[-.18, 1.2, 0]}><mesh position={[0, -.36, 0]}><boxGeometry args={[.2, .7, .24]} /><meshStandardMaterial color={secondary} emissive={secondary} emissiveIntensity={.18} /></mesh></group>
-    <group ref={rightLeg} position={[.18, 1.2, 0]}><mesh position={[0, -.36, 0]}><boxGeometry args={[.2, .7, .24]} /><meshStandardMaterial color={secondary} emissive={secondary} emissiveIntensity={.18} /></mesh></group>
-    <group ref={leftArm} position={[-.4, 1.85, 0]}><mesh position={[0, -.28, 0]}><capsuleGeometry args={[.1, .42, 4, 8]} /><meshStandardMaterial color={skin} /></mesh></group>
-    <group ref={rightArm} position={[.4, 1.85, 0]}><mesh position={[0, -.28, 0]}><capsuleGeometry args={[.1, .42, 4, 8]} /><meshStandardMaterial color={skin} /></mesh></group>
-    {style.accessory === 'backpack' && <mesh position={[0, 1.72, -.25]}><boxGeometry args={[.48, .58, .12]} /><meshStandardMaterial color="#d8fd71" emissive="#d8fd71" emissiveIntensity={.3} /></mesh>}
+    <mesh position={[0,1.66,0]} scale={[body === 'female' ? .88 : 1,1,1]}><boxGeometry args={[.62,.72,.38]}/><meshStandardMaterial color={primary} emissive={primary} emissiveIntensity={.3}/></mesh>
+    <mesh position={[0,2.25,0]}><sphereGeometry args={[.28,10,8]}/><meshStandardMaterial color={skin}/></mesh>{hairPart}
+    {hat === 'cap' && <><mesh position={[0,2.53,0]}><sphereGeometry args={[.32,10,6]}/><meshStandardMaterial color={primary}/></mesh><mesh position={[.16,2.47,.12]} rotation={[0,.2,0]}><boxGeometry args={[.3,.04,.18]}/><meshStandardMaterial color={primary}/></mesh></>}
+    {hat === 'beanie' && <><mesh position={[0,2.48,0]}><sphereGeometry args={[.33,10,7]}/><meshStandardMaterial color={secondary}/></mesh><mesh position={[0,2.3,0]}><cylinderGeometry args={[.32,.32,.1,12]}/><meshStandardMaterial color={primary}/></mesh></>}
+    {hat === 'tophat' && <><mesh position={[0,2.62,0]}><cylinderGeometry args={[.2,.2,.45,12]}/><meshStandardMaterial color={primary}/></mesh><mesh position={[0,2.4,0]}><cylinderGeometry args={[.4,.4,.06,12]}/><meshStandardMaterial color={primary}/></mesh></>}
+    {hat === 'crown' && <><mesh position={[0,2.48,0]}><cylinderGeometry args={[.3,.3,.16,10]}/><meshStandardMaterial color={primary}/></mesh>{[-.18,0,.18].map(x => <mesh key={x} position={[x,2.64,0]} rotation={[0,0,x ? (x > 0 ? -.2 : .2) : 0]}><coneGeometry args={[.08,.22,4]}/><meshStandardMaterial color={primary}/></mesh>)}</>}
+    <group ref={leftLeg} position={[-(body === 'female' ? .14 : .18),1.2,0]}><mesh position={[0,-.36,0]}><boxGeometry args={[.2,.7,.24]}/><meshStandardMaterial color={secondary}/></mesh></group><group ref={rightLeg} position={[body === 'female' ? .14 : .18,1.2,0]}><mesh position={[0,-.36,0]}><boxGeometry args={[.2,.7,.24]}/><meshStandardMaterial color={secondary}/></mesh></group>
+    {body === 'female' && <mesh position={[0,1.28,0]} scale={[1.15,1,.7]}><cylinderGeometry args={[.34,.42,.22,8]}/><meshStandardMaterial color={secondary}/></mesh>}
+    <group ref={leftArm} position={[-.4,1.85,0]}><mesh position={[0,-.28,0]}><capsuleGeometry args={[.1,.42,4,8]}/><meshStandardMaterial color={skin}/></mesh></group><group ref={rightArm} position={[.4,1.85,0]}><mesh position={[0,-.28,0]}><capsuleGeometry args={[.1,.42,4,8]}/><meshStandardMaterial color={skin}/></mesh></group>
+    {accessory === 'glasses' && <><mesh position={[-.12,2.27,.25]}><torusGeometry args={[.09,.018,6,12]}/><meshStandardMaterial color="#17152b"/></mesh><mesh position={[.12,2.27,.25]}><torusGeometry args={[.09,.018,6,12]}/><meshStandardMaterial color="#17152b"/></mesh><mesh position={[0,2.27,.25]}><boxGeometry args={[.08,.02,.02]}/><meshStandardMaterial color="#17152b"/></mesh></>}
+    {accessory === 'earrings' && [-1,1].map(side => <mesh key={side} position={[side*.29,2.16,.05]}><sphereGeometry args={[.045,6,6]}/><meshStandardMaterial color={primary} emissive={primary}/></mesh>)}{accessory === 'beard' && <mesh position={[0,2.12,.22]} scale={[.7,.5,.3]}><sphereGeometry args={[.16,8,6]}/><meshStandardMaterial color={hair}/></mesh>}{accessory === 'scarf' && <><mesh position={[0,1.98,0]}><torusGeometry args={[.25,.07,6,16]}/><meshStandardMaterial color={primary}/></mesh><mesh position={[.25,1.75,.02]} rotation={[0,0,-.25]}><boxGeometry args={[.1,.5,.08]}/><meshStandardMaterial color={primary}/></mesh></>}{accessory === 'backpack' && <mesh position={[0,1.7,-.28]}><boxGeometry args={[.5,.6,.15]}/><meshStandardMaterial color={secondary}/></mesh>}
   </group>
 }
+    
