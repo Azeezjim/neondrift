@@ -9,9 +9,9 @@ export function PlayerCharacter({ style = {}, speed = 0 }: Props) {
   const body = style.body === 'female' ? 'female' : 'male', hairType = ['short','afro','braids','bun','ponytail','dreads','bald'].includes(style.hair || '') ? style.hair : 'short', hat = ['cap','beanie','tophat','crown'].includes(style.hat || '') ? style.hat : 'none', accessory = ['glasses','earrings','beard','scarf','backpack'].includes(style.accessory || '') ? style.accessory : 'none'
   const primary = style.primaryColor || '#ff3ea5', secondary = style.secondaryColor || '#5c6cff', skin = style.skinColor || '#f6b58e', hair = style.hairColor || '#151026'
   useFrame((_, delta) => {
-    const currentSpeed = Math.max(0, speed), cadence = currentSpeed > 2 ? currentSpeed * .55 : 5
+    const currentSpeed = Math.max(0, speed), cadence = currentSpeed > 2 ? currentSpeed * .85 : 5
     phase.current = (phase.current + delta * cadence) % (Math.PI * 2)
-    const runPhase = phase.current, amplitude = currentSpeed > 2 ? .55 + Math.min(1, currentSpeed / 48) * .6 : .35
+    const runPhase = phase.current, amplitude = currentSpeed > 2 ? .55 + Math.min(1, currentSpeed / 26) * .6 : .35
     const legSwing = Math.sin(runPhase) * amplitude, oppositeSwing = Math.sin(runPhase + Math.PI) * amplitude
     const leftFoot = Math.max(0, Math.sin(runPhase) * .7 * .22), rightFoot = Math.max(0, Math.sin(runPhase + Math.PI) * .7 * .22)
     if (leftLeg.current) { leftLeg.current.rotation.x = legSwing; leftLeg.current.position.y = .9 + leftFoot }
