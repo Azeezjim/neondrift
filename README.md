@@ -1,4 +1,4 @@
-# Neon Drift
+# Neon Drift Arcade
 
 A static-export Next.js endless neon runner for the start.ng arcade.
 
